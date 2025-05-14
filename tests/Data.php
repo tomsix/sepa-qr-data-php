@@ -1,10 +1,9 @@
 <?php
 namespace SepaQr\Test;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use SepaQr\Data;
-use SepaQr\Exception;
-use Stringable;
 
 /**
  * @SuppressWarnings("PHPMD.TooManyPublicMethods")
@@ -14,7 +13,7 @@ class DataTest extends TestCase
     /**
      * @SuppressWarnings("PHPMD.StaticAccess")
      */
-    public function testFormatMoney(): void
+    public function testFormatMoney()
     {
         $this->assertEquals(
             'EUR100.00',
@@ -32,7 +31,7 @@ class DataTest extends TestCase
     /**
      * @SuppressWarnings("PHPMD.StaticAccess")
      */
-    public function testCreate(): void
+    public function testCreate()
     {
         $this->assertInstanceOf(
             Data::class,
@@ -40,62 +39,62 @@ class DataTest extends TestCase
         );
     }
 
-    public function testSetCharacterSet(): void
+    public function testSetCharacterSet()
     {
         $sepaQrData = new Data();
 
         $sepaQrData->setCharacterSet(Data::ISO8859_1);
 
-        $this->expectException(\TypeError::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $sepaQrData->setCharacterSet('UTF8'); // @phpstan-ignore-line
     }
 
-    public function testSetBic(): void
+    public function testSetBic()
     {
         $sepaQrData = new Data();
 
         $sepaQrData->setBic('ABCDEFGH'); // 8 characters
         $sepaQrData->setBic('ABCDEFGHIJK'); // 11 characters
 
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $sepaQrData->setBic('ABCDEFGHI'); // 9 characters
     }
 
-    public function testSetCurrency(): void
+    public function testSetCurrency()
     {
         $sepaQrData = new Data();
 
         $sepaQrData->setCurrency('USD');
 
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $sepaQrData->setCurrency('ABCDEF');
     }
 
-    public function testSetRemittance(): void
+    public function testSetRemittance()
     {
         $sepaQrData = new Data();
 
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $sepaQrData->setRemittanceReference('ABC')
             ->setRemittanceText('DEF');
     }
 
-    public function testSetPurpose(): void
+    public function testSetPurpose()
     {
         $sepaQrData = new Data();
 
         $sepaQrData->setPurpose('ACMT');
 
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $sepaQrData->setPurpose('custom');
     }
 
-    public function testEncodeMessage(): void
+    public function testEncodeMessage()
     {
         $sepaQrData = new Data();
 
@@ -139,28 +138,28 @@ EOF;
         $this->assertSame($expectedString, $message);
     }
 
-    public function testToString(): void
+    public function testToString()
     {
         $sepaQrData = (new Data())
             ->setName('Test')
             ->setIban('ABC');
 
-        $this->assertInstanceOf(Stringable::class, $sepaQrData);
+        $this->assertInternalType('string', (string)$sepaQrData);
     }
 
-    public function testSetVersionExceptionCase1(): void
+    public function testSetVersionExceptionCase1()
     {
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $sepaQrData = new Data();
         $sepaQrData->setVersion(3);
     }
 
-    public function testSetVersionExceptionCase2(): void
+    public function testSetVersionExceptionCase2()
     {
         $sepaQrData = new Data();
 
-        $this->expectException(\TypeError::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $sepaQrData->setVersion('v1'); // @phpstan-ignore-line
     }

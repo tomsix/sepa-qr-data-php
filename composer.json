@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "php": ">=8.1"
+        "php": "^5.5"
     },
     "autoload": {
         "psr-4": {
@@ -22,9 +22,7 @@
         "analyze": "phpstan analyze"
     },
     "require-dev": {
-        "phpmd/phpmd": "@stable",
-        "phpunit/phpunit": "^9",
-        "phpstan/phpstan": "^2.0",
-        "phpstan/phpstan-deprecation-rules": "^2.0"
+        "phpmd/phpmd": "^2.15.0",
+        "phpunit/phpunit": "^5.7.27"
     }
 }

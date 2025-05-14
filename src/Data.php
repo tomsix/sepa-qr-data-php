@@ -1,6 +1,12 @@
 <?php
+
 namespace SepaQr;
 
+use InvalidArgumentException;
+
+/**
+ * @implements \Stringable
+ */
 class Data
 {
     const UTF_8 = 1;
@@ -15,14 +21,19 @@ class Data
     /**
      * @var array<string, int|float|string>
      */
-    private $sepaValues = array(
+    private $sepaValues = [
         'serviceTag' => 'BCD',
         'version' => 2,
         'characterSet' => 1,
         'identification' => 'SCT'
-    );
+    ];
 
-    public static function formatMoney(string $currency = 'EUR', float $value = 0): string
+    /**
+     * @param string $currency
+     * @param float $value
+     * @return string
+     */
+    public static function formatMoney($currency = 'EUR', $value = 0)
     {
         return sprintf(
             '%s%s',
@@ -31,15 +42,22 @@ class Data
         );
     }
 
-    public static function create(): Data
+    /**
+     * @return static
+     */
+    public static function create()
     {
-        return new self();
+        return new static();
     }
 
-    public function setServiceTag(string $serviceTag = 'BCD'): static
+    /**
+     * @param string $serviceTag
+     * @return static
+     */
+    public function setServiceTag($serviceTag = 'BCD')
     {
         if ($serviceTag !== 'BCD') {
-            throw new Exception('Invalid service tag');
+            throw new InvalidArgumentException('Invalid service tag');
         }
 
         $this->sepaValues['serviceTag'] = $serviceTag;
@@ -47,10 +65,14 @@ class Data
         return $this;
     }
 
-    public function setVersion(int $version = 2): static
+    /**
+     * @param int $version
+     * @return static
+     */
+    public function setVersion($version = 2)
     {
         if (!in_array($version, range(1, 2))) {
-            throw new Exception('Invalid version');
+            throw new InvalidArgumentException('Invalid version');
         }
 
         $this->sepaValues['version'] = $version;
@@ -58,10 +80,14 @@ class Data
         return $this;
     }
 
-    public function setCharacterSet(int $characterSet = self::UTF_8): static
+    /**
+     * @param int $characterSet
+     * @return static
+     */
+    public function setCharacterSet($characterSet = self::UTF_8)
     {
         if (!in_array($characterSet, range(1, 8))) {
-            throw new Exception('Invalid character set');
+            throw new InvalidArgumentException('Invalid character set');
         }
 
         $this->sepaValues['characterSet'] = $characterSet;
@@ -69,10 +95,14 @@ class Data
         return $this;
     }
 
-    public function setIdentification(string $identification = 'SCT'): static
+    /**
+     * @param string $identification
+     * @return static
+     */
+    public function setIdentification($identification = 'SCT')
     {
         if ($identification !== 'SCT') {
-            throw new Exception('Invalid identification code');
+            throw new InvalidArgumentException('Invalid identification code');
         }
 
         $this->sepaValues['identification'] = $identification;
@@ -80,10 +110,14 @@ class Data
         return $this;
     }
 
-    public function setBic(string $bic): static
+    /**
+     * @param string $bic
+     * @return static
+     */
+    public function setBic($bic)
     {
         if (strlen($bic) !== 8 && strlen($bic) !== 11) {
-            throw new Exception('BIC of the beneficiary can only be 8 or 11 characters');
+            throw new InvalidArgumentException('BIC of the beneficiary can only be 8 or 11 characters');
         }
 
         $this->sepaValues['bic'] = $bic;
@@ -91,10 +125,14 @@ class Data
         return $this;
     }
 
-    public function setName(string $name): static
+    /**
+     * @param string $name
+     * @return static
+     */
+    public function setName($name)
     {
         if (strlen($name) > 70) {
-            throw new Exception('Name of the beneficiary cannot be longer than 70 characters');
+            throw new InvalidArgumentException('Name of the beneficiary cannot be longer than 70 characters');
         }
 
         $this->sepaValues['name'] = $name;
@@ -102,10 +140,14 @@ class Data
         return $this;
     }
 
-    public function setIban(string $iban): static
+    /**
+     * @param string $iban
+     * @return static
+     */
+    public function setIban($iban)
     {
         if (strlen($iban) > 34) {
-            throw new Exception('Account number of the beneficiary cannot be longer than 34 characters');
+            throw new InvalidArgumentException('Account number of the beneficiary cannot be longer than 34 characters');
         }
 
         $this->sepaValues['iban'] = $iban;
@@ -113,10 +155,14 @@ class Data
         return $this;
     }
 
-    public function setCurrency(string $currency): static
+    /**
+     * @param string $currency
+     * @return static
+     */
+    public function setCurrency($currency)
     {
         if (strlen($currency) !== 3) {
-            throw new Exception('Currency of the credit transfer can only be a valid ISO 4217 code');
+            throw new InvalidArgumentException('Currency of the credit transfer can only be a valid ISO 4217 code');
         }
 
         $this->sepaValues['currency'] = $currency;
@@ -124,14 +170,18 @@ class Data
         return $this;
     }
 
-    public function setAmount(float $amount): static
+    /**
+     * @param float $amount
+     * @return static
+     */
+    public function setAmount($amount)
     {
         if ($amount < 0.01) {
-            throw new Exception('Amount of the credit transfer cannot be smaller than 0.01 Euro');
+            throw new InvalidArgumentException('Amount of the credit transfer cannot be smaller than 0.01 Euro');
         }
 
         if ($amount > 999999999.99) {
-            throw new Exception('Amount of the credit transfer cannot be higher than 999999999.99 Euro');
+            throw new InvalidArgumentException('Amount of the credit transfer cannot be higher than 999999999.99 Euro');
         }
 
         $this->sepaValues['amount'] = $amount;
@@ -139,10 +189,14 @@ class Data
         return $this;
     }
 
-    public function setPurpose(string $purpose): static
+    /**
+     * @param string $purpose
+     * @return static
+     */
+    public function setPurpose($purpose)
     {
         if (strlen($purpose) !== 4) {
-            throw new Exception('Purpose code can only be 4 characters');
+            throw new InvalidArgumentException('Purpose code can only be 4 characters');
         }
 
         $this->sepaValues['purpose'] = $purpose;
@@ -150,14 +204,18 @@ class Data
         return $this;
     }
 
-    public function setRemittanceReference(string $remittanceReference): static
+    /**
+     * @param string $remittanceReference
+     * @return static
+     */
+    public function setRemittanceReference($remittanceReference)
     {
         if (strlen($remittanceReference) > 35) {
-            throw new Exception('Structured remittance information cannot be longer than 35 characters');
+            throw new InvalidArgumentException('Structured remittance information cannot be longer than 35 characters');
         }
 
         if (isset($this->sepaValues['remittanceText'])) {
-            throw new Exception('Use either structured or unstructured remittance information');
+            throw new InvalidArgumentException('Use either structured or unstructured remittance information');
         }
 
         $this->sepaValues['remittanceReference'] = (string)$remittanceReference;
@@ -165,14 +223,18 @@ class Data
         return $this;
     }
 
-    public function setRemittanceText(string $remittanceText): static
+    /**
+     * @param string $remittanceText
+     * @return static
+     */
+    public function setRemittanceText($remittanceText)
     {
         if (strlen($remittanceText) > 140) {
-            throw new Exception('Unstructured remittance information cannot be longer than 140 characters');
+            throw new InvalidArgumentException('Unstructured remittance information cannot be longer than 140 characters');
         }
 
         if (isset($this->sepaValues['remittanceReference'])) {
-            throw new Exception('Use either structured or unstructured remittance information');
+            throw new InvalidArgumentException('Use either structured or unstructured remittance information');
         }
 
         $this->sepaValues['remittanceText'] = $remittanceText;
@@ -180,10 +242,14 @@ class Data
         return $this;
     }
 
-    public function setInformation(string $information): static
+    /**
+     * @param string $information
+     * @return static
+     */
+    public function setInformation($information)
     {
         if (strlen($information) > 70) {
-            throw new Exception('Beneficiary to originator information cannot be longer than 70 characters');
+            throw new InvalidArgumentException('Beneficiary to originator information cannot be longer than 70 characters');
         }
 
         $this->sepaValues['information'] = $information;
@@ -191,7 +257,10 @@ class Data
         return $this;
     }
 
-    public function __toString(): string
+    /**
+     * @return string
+     */
+    public function __toString()
     {
         $defaults = array(
             'bic' => '',
@@ -208,15 +277,15 @@ class Data
         $values = array_merge($defaults, $this->sepaValues);
 
         if ($values['version'] === 1 && !$values['bic']) {
-            throw new Exception('Missing BIC of the beneficiary bank');
+            throw new InvalidArgumentException('Missing BIC of the beneficiary bank');
         }
 
         if (!$values['name']) {
-            throw new Exception('Missing name of the beneficiary');
+            throw new InvalidArgumentException('Missing name of the beneficiary');
         }
 
         if (!$values['iban']) {
-            throw new Exception('Missing account number of the beneficiary');
+            throw new InvalidArgumentException('Missing account number of the beneficiary');
         }
 
         return rtrim(implode("\n", array(
@@ -227,7 +296,7 @@ class Data
             $values['bic'],
             $values['name'],
             $values['iban'],
-            self::formatMoney((string)$values['currency'], (float)$values['amount']),
+            static::formatMoney((string)$values['currency'], (float)$values['amount']),
             $values['purpose'],
             $values['remittanceReference'],
             $values['remittanceText'],
